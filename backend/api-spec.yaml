@@ -185,4 +185,165 @@ paths:
           description: Invalid file type, only PDF and DOCX are allowed
         '500':
           description: Error during the file upload process
+  /positions/{id}/candidates:
+    get:
+      summary: Get candidates by position
+      description: Returns all candidates in process for a specific position
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Position ID
+      responses:
+        '200':
+          description: List of candidates retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    full_name:
+                      type: string
+                      description: Full name of the candidate
+                      example: "John Doe"
+                    current_interview_step:
+                      type: string
+                      description: Id of the current stage
+                      example: "1"
+                    average_score:
+                      type: number
+                      format: float
+                      description: Average score from all interviews
+                      example: 4.5
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+
+  /candidates/{id}/stage:
+    put:
+      summary: Update candidate stage
+      description: Updates the interview stage of a specific candidate. Stage must be a number.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Candidate ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                new_stage:
+                  type: string
+                  description: Id of the new stage
+                  example: "2"
+              required:
+                - new_stage
+      responses:
+        '200':
+          description: Stage updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Candidate stage updated successfully"
+                  candidate_id:
+                    type: integer
+                    example: 456
+                  new_stage:
+                    type: string
+                    example: "2"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Error al actualizar la etapa del candidato"
+                  error:
+                    type: string
+
+  /candidates/{id}:
+    get:
+      summary: Get candidate by ID
+      description: Retrieves detailed information for a specific candidate
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Candidate ID
+      responses:
+        '200':
+          description: Candidate found successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  firstName:
+                    type: string
+                  lastName:
+                    type: string
+                  email:
+                    type: string
+                  phone:
+                    type: string
+                  address:
+                    type: string
+        '400':
+          description: Invalid ID format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid ID format"
+        '404':
+          description: Candidate not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Candidate not found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal Server Error"
 
