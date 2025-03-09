@@ -31,7 +31,8 @@ paths:
                       example: "John Doe"
                     current_interview_step:
                       type: string
-                      example: "Technical Interview"
+                      example: "1"
+                      description: Id de la etapa actual
                     average_score:
                       type: number
                       format: float
@@ -51,7 +52,7 @@ paths:
   /candidates/{id}/stage:
     put:
       summary: Actualiza la etapa de un candidato
-      description: Actualiza la etapa del proceso de entrevista de un candidato específico
+      description: Actualiza la etapa del proceso de entrevista de un candidato específico. La etapa debe ser un número.
       parameters:
         - in: path
           name: id
@@ -68,7 +69,8 @@ paths:
               properties:
                 new_stage:
                   type: string
-                  example: "Final Interview"
+                  example: "2"
+                  description: Id de la nueva etapa
               required:
                 - new_stage
       responses:
@@ -87,7 +89,7 @@ paths:
                     example: 456
                   new_stage:
                     type: string
-                    example: "Final Interview"
+                    example: "2"
         '500':
           description: Error del servidor
           content:
@@ -263,4 +265,4 @@ paths:
                 properties:
                   error:
                     type: string
-                    example: "Internal Server Error" 
+                    example: "Internal Server Error"

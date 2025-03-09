@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
-import candidateRoutes from './routes/candidateRoutes';
+import { setupRoutes } from './routes';
 import { uploadFile } from './application/services/fileUploadService';
 import cors from 'cors';
 
@@ -18,8 +18,7 @@ declare global {
 dotenv.config();
 const prisma = new PrismaClient();
 
-export const app = express();
-export default app;
+const app = express();
 
 // Middleware para parsear JSON. Asegúrate de que esto esté antes de tus rutas.
 app.use(express.json());
@@ -36,8 +35,8 @@ app.use(cors({
   credentials: true
 }));
 
-// Import and use candidateRoutes
-app.use('/candidates', candidateRoutes);
+// Setup routers
+setupRoutes(app);
 
 // Route for file uploads
 app.post('/upload', uploadFile);
@@ -47,7 +46,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const port = 3010;
+const PORT = process.env.PORT || 3010;
 
 app.get('/', (req, res) => {
   res.send('Hola LTI!');
@@ -55,7 +54,7 @@ app.get('/', (req, res) => {
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
-  res.type('text/plain'); 
+  res.type('text/plain');
   res.status(500).send('Something broke!');
 });
 
