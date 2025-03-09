@@ -1,5 +1,60 @@
-import { Request, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import { addCandidate, findCandidateById } from '../../application/services/candidateService';
+import { CandidateService } from '../../domain/services/CandidateService';
+import { CandidateStageDto } from '../../domain/dtos/CandidateStageDto';
+
+export class CandidateController {
+  private router: Router;
+  private candidateService: CandidateService;
+
+  constructor() {
+    this.router = Router();
+    this.candidateService = new CandidateService();
+    this.initializeRoutes();
+  }
+
+  private initializeRoutes(): void {
+    this.router.get('/positions/:id/candidates', this.getCandidatesByPosition.bind(this));
+    this.router.put('/candidates/:id/stage', this.updateCandidateStage.bind(this));
+  }
+
+  private async getCandidatesByPosition(req: Request, res: Response): Promise<void> {
+    try {
+      const positionId = parseInt(req.params.id);
+      const candidates = await this.candidateService.getCandidatesByPosition(positionId);
+      res.json(candidates);
+    } catch (error: unknown) {
+      res.status(500).json({
+        message: 'Error al obtener los candidatos',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
+  private async updateCandidateStage(req: Request, res: Response): Promise<void> {
+    try {
+      const candidateId = parseInt(req.params.id);
+      const { new_stage } = req.body as CandidateStageDto;
+
+      await this.candidateService.updateCandidateStage(candidateId, new_stage);
+
+      res.json({
+        message: "Candidate stage updated successfully",
+        candidate_id: candidateId,
+        new_stage: new_stage
+      });
+    } catch (error: unknown) {
+      res.status(500).json({
+        message: 'Error al actualizar la etapa del candidato',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  }
+
+  public getRouter(): Router {
+    return this.router;
+  }
+}
 
 export const addCandidateController = async (req: Request, res: Response) => {
     try {
